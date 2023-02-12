@@ -1,0 +1,62 @@
+create table categoria(
+	codigo int not null,
+	nome varchar (30) not null,
+	constraint pk_codigo primary key (codigo)
+);
+
+create table cliente(
+	cpf int not null,
+	nome varchar (30) not null,
+	senha varchar (30) not null,
+	tel int not null,
+	foto oid,
+	constraint pk_cpf primary key (cpf)
+);
+
+create table ciclovendas(
+	codigo int not null,
+	nome varchar (30) not null,
+	datainicio date not null,
+	datafim date not null,
+	constraint pk_codigociclo primary key (codigo)
+);
+
+create table formapagamento(
+	codigo int not null,
+	nome varchar (30) not null,
+	numparcelas int not null,
+	intervaloparcelas int not null,
+	constraint pk_codigopagamento primary key (codigo)
+);
+
+create table produtos(
+	codigo int not null,
+	nome varchar (30) not null,
+	preco float not null,
+	foto oid not null,
+	descricao varchar(100),
+	categoria int not null,
+	constraint pk_codigoprodutos primary key (codigo),
+	constraint fk_idcategoria foreign key (categoria) references categoria (codigo)
+);
+
+create table pedido(
+	codigo int not null,
+	valortotal float not null,
+	data date not null,
+	descricao varchar (100),
+	statuspagamento int,
+	cpfcliente int not null,
+	pagamento int not null,
+	produto1 int not null, 
+	produto2 int,
+	produto3 int,
+	ciclo int not null,
+	constraint pk_codigopedido primary key (codigo),
+	constraint fk_cpfcliente foreign key (cpfcliente) references cliente (cpf),
+	constraint fk_codpagamento foreign key (pagamento) references formapagamento (codigo),
+	constraint fk_produto1 foreign key (produto1) references produtos (codigo),
+	constraint fk_produto2 foreign key (produto2) references produtos (codigo),
+	constraint fk_produto3 foreign key (produto3) references produtos (codigo),
+	constraint fk_ciclo foreign key (ciclo) references ciclovendas (codigo)
+);
