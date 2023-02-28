@@ -1,0 +1,86 @@
+create table categoria(
+	codigo int not null,
+	nome varchar (30) not null,
+	constraint pk_codigo primary key (codigo)
+);
+
+create table cliente( 
+	cpf int not null,
+	nome varchar (30) not null,
+	senha varchar (30) not null,
+	tel int not null,
+	foto oid,
+	constraint pk_cpf primary key (cpf)
+);
+
+create table ciclovendas(
+	codigo int not null,
+	nome varchar (30) not null,
+	datainicio date not null,
+	datafim date not null,
+	constraint pk_codigociclo primary key (codigo)
+);
+
+create table formapagamento(
+	codigo int not null,
+	nome varchar (30) not null,
+	numparcelas int not null,
+	intervaloparcelas int not null,
+	constraint pk_codigopagamento primary key (codigo)
+);
+
+create table produtos(
+	codigo int not null,
+	nome varchar (30) not null,
+	preco float not null,
+	descricao varchar(100),
+	categoria int not null,
+	constraint pk_codigoprodutos primary key (codigo),
+	constraint fk_idcategoria foreign key (categoria) references categoria (codigo)
+);
+
+create table pedido(
+	codigo int not null,
+	data date not null,
+	descricao varchar (100),
+	statuspagamento int,
+	cpfcliente int not null,
+	pagamento int not null,
+	ciclo int not null,
+	constraint pk_codigopedido primary key (codigo),
+	constraint fk_cpfcliente foreign key (cpfcliente) references cliente (cpf),
+	constraint fk_codpagamento foreign key (pagamento) references formapagamento (codigo),
+	constraint fk_ciclo foreign key (ciclo) references ciclovendas (codigo)
+);
+
+create table produtospedido(
+	pedido int not null,
+	produto int not null,
+	quantidade int not null,
+	valor float not null,
+	constraint pk_codpedido primary key (pedido, produto, quantidade),
+	constraint fk_produto foreign key (produto) references produtos (codigo),
+	constraint fk_pedido foreign key (pedido) references pedido (codigo)	
+);
+
+insert into categoria (codigo, nome) values (1, 'Maquiagem'),(2, 'Perfumes'),(3,'Cremes');
+
+insert into cliente (cpf, nome, senha, tel) values (000, 'Deise', 'senha', 000),(999, 'Marcelo', 'senha', 999), (111, 'Joao', 'senha', 111), (222, 'Maria', 'senha', 222), (333, 'Jose', 'senha', 333), (444, 'Josi', 'senha', 444), (888, 'Amanda', 'senha', 88800), (1010, 'Rafaela', 'senha', 1010), (1212, 'Carem', 'senha', 1212),(1313, 'Laura', 'senha', 1313);
+
+insert into ciclovendas (codigo, nome, datainicio, datafim) values (1, 'ciclo 1', '01/01/2023', '31/01/2023'), (2, 'ciclo 2', '01/02/2023', '28/02/2023');
+
+insert into formapagamento (codigo, nome, numparcelas, intervaloparcelas) values (2, '15 dias',1,15),(1,'avista',1,0),(3, '30 dias',1,30);
+
+insert into produtos (codigo, nome, preco, descricao, categoria) values (1, 'perfume bebe', 50.6, 'sem alcool', 2), (2, 'base', 41,'cor 001',1), (3,'creme para as maos', 27.3,'cereja',3), (4, 'perfume ilia', 80.8, 'citrico', 2),(30, 'perfume humor', 70.9, NULL, 2),(7, 'mascara para cilios', 51.9, NULL, 1),(11, 'lapis para sobrancelha', 51.9, NULL, 1), (8, 'batom matte', 19.9, 'cor rosa', 1), (9, 'batom', 19.9, 'cor cereja', 1);
+insert into produtos (codigo, nome, preco, descricao, categoria) values (10, 'perfume masculino', 71.6, ' ', 2);
+
+insert into pedido (codigo, data, descricao, statuspagamento, cpfcliente, pagamento, ciclo) values (25,'13/02/2023', NULL, 1, 111, 1, 2),(7,'15/02/2023', NULL, 1, 444, 1, 2), (2,'01/02/2023', NULL, 1, 1010, 2, 2), (90,'24/02/2023', 'entregar junto com o prox pedido', 1, 999, 1, 2),(10, '02/01/2023', NULL, 0, 0, 1,1),(3,'04/02/2023', 'entregue para vizinha', 1, 999, 1, 2), (1, '04/01/2023', NULL, 0, 333, 1,1), (13, '28/01/2023', NULL, 0, 888, 1,1),(18, '04/01/2023', 'entredia dia 14 de janeiro', 0, 1212, 1,1) ;
+
+insert into produtospedido(pedido, produto, quantidade) values (3, 1, 3), (3, 2, 1), (3, 3, 1), (3, 10, 1),(2, 1, 1), (2, 10, 2), (2, 9, 1), (2, 7, 1);
+insert into produtospedido(pedido, produto, quantidade) values (10, 1, 1), (10, 1, 2), (10, 3, 1),(25, 2, 1), (90, 30, 1), (18, 10, 1);
+
+insert into produtos (codigo, nome, preco, descricao, categoria) values (30, 'perfume humor', 70.9, NULL, 2),(7, 'mascara para cilios', 51.9, NULL, 1),(11, 'lapis para sobrancelha', 51.9, NULL, 1), (8, 'batom matte', 19.9, 'cor rosa', 1), (9, 'batom', 19.9, 'cor cereja', 1);
+
+
+select p.nome from produtos p join produtospedido pp on pp.produto=p.codigo join pedido pd on pp.pedido=pd.codigo join cliente c on c.cpf=pd.cpfcliente where cpf=999;
+select c.nome, p.nome from produtos p join produtospedido pp on pp.produto=p.codigo join pedido pd on pp.pedido=pd.codigo join cliente c on c.cpf=pd.cpfcliente;
